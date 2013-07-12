@@ -32,7 +32,6 @@ var superSlides = (function() {
         },
 
         nextSlide: function () {
-            console.log('next slide');
             currentSlideId = thisobj.getNextSlideId();
             thisobj.slideIn();
             thisobj.prepareForNextSlide();
