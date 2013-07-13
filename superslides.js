@@ -1,24 +1,24 @@
-var superSlides = (function() {
-    var container;
-    var gallery_list;
-    var slides;
+/*
+ * superslides.js
+ * Author: Irwan Setiawan
+ */
+(function($){
 
-    var slideCount;
-    var currentSlideId = -1;
-    var currentSlide;
-    var nextSlideTimeout;
+    $.fn.superSlides = function(options) {
 
-    var thisobj;
+        var settings = $.extend({
 
-    return {
+        }, options );
 
-        slideCount : function() { return slideCount; },
+        var gallery_list;
+        var slides;
 
-        currentSlideId : function() { return currentSlideId; },
+        var slideCount;
+        var currentSlideId = -1;
+        var currentSlide;
+        var nextSlideTimeout;
 
-        init : function() {
-            thisobj = this;
-            container = $('#home_gallery');
+        var init = function(container) {
             gallery_list = $('ul', container);
             slides = $('.slide', container);
             slideCount = slides.length;
@@ -28,41 +28,41 @@ var superSlides = (function() {
                 $(this).attr('id', 'slide'+counter);
                 counter+=1;
             }).hide();
-            thisobj.nextSlide();
-        },
+            nextSlide();
+        };
 
-        nextSlide: function () {
-            currentSlideId = thisobj.getNextSlideId();
-            thisobj.slideIn();
-            thisobj.prepareForNextSlide();
-        },
+        var nextSlide = function () {
+            currentSlideId = getNextSlideId();
+            slideIn();
+            prepareForNextSlide();
+        };
 
-        prepareForNextSlide : function() {
+        var prepareForNextSlide = function() {
             nextSlideTimeout = setTimeout(function() {
-                thisobj.slideOut(function() {
-                    thisobj.nextSlide();
+                slideOut(function() {
+                    nextSlide();
                 });
             }, 8000);
-        },
+        };
 
-        getNextSlideId : function() {
+        var getNextSlideId = function() {
             return (currentSlideId + 1 >= slideCount) ? 0 : (currentSlideId+1);
-        },
+        };
 
-        currentSlide : function() {
+        var currentSlide = function() {
             return $('#slide'+currentSlideId);
-        },
+        };
 
-        slideIn : function() {
-            thisobj.animateItems('in');
-        },
+        var slideIn = function() {
+            animateItems('in');
+        };
 
-        slideOut : function(callback) {
-            thisobj.animateItems('out', callback);
-        },
+        var slideOut = function(callback) {
+            animateItems('out', callback);
+        };
 
-        animateItems : function(inout, callback) {
-            var currentSlide = thisobj.currentSlide();
+        var animateItems = function(inout, callback) {
+            var currentSlide = currentSlide();
             currentSlide.show();
             var itemCount = $('.item', currentSlide).length;
             var itemFinishedAnimation = 0;
@@ -90,19 +90,22 @@ var superSlides = (function() {
                     } else {
                         if (altx) $(toAnimate).animate({ left: altx }, 300);
                         if (alty) $(toAnimate).animate({ top: alty }, 300, function() {
-                            thisobj.animateItemsCallback(++itemFinishedAnimation, itemCount, callback);
+                            animateItemsCallback(++itemFinishedAnimation, itemCount, callback);
                         });
                     }
                 }, delay);
             });
-        },
+        };
 
-        animateItemsCallback : function(a, b, callback) {
+        var animateItemsCallback = function(a, b, callback) {
             if (a >= b && callback) {
                 callback();
             }
-        }
+        };
 
-    }
+        init(this);
 
-})();
+        return this;
+
+    };
+}(jQuery));
