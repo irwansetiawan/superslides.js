@@ -8,7 +8,9 @@
 <body>
     <script>
         $(document).ready(function() {
-            $('#slides').superslides();
+            $('#slides').superSlides({
+                delay : 2000
+            });
         });
     </script>
 
@@ -16,8 +18,10 @@
         <ul>
             <li>
                 <div class="item">Slide 1</div>
+                <div class="item">Slide 1</div>
             </li>
             <li>
+                <div class="item">Slide 2</div>
                 <div class="item">Slide 2</div>
             </li>
         </ul>

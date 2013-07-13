@@ -7,7 +7,7 @@
     $.fn.superSlides = function(options) {
 
         var settings = $.extend({
-
+            delay : 8000
         }, options );
 
         var gallery_list;
@@ -20,7 +20,7 @@
 
         var init = function(container) {
             gallery_list = $('ul', container);
-            slides = $('.slide', container);
+            slides = $('li', container);
             slideCount = slides.length;
 
             var counter=0;
@@ -37,20 +37,21 @@
             prepareForNextSlide();
         };
 
+        var getCurrentSlide = function () {
+            return $('#slide'+currentSlideId);
+        };
+
         var prepareForNextSlide = function() {
             nextSlideTimeout = setTimeout(function() {
                 slideOut(function() {
+                    getCurrentSlide().hide();
                     nextSlide();
                 });
-            }, 8000);
+            }, settings.delay);
         };
 
         var getNextSlideId = function() {
             return (currentSlideId + 1 >= slideCount) ? 0 : (currentSlideId+1);
-        };
-
-        var currentSlide = function() {
-            return $('#slide'+currentSlideId);
         };
 
         var slideIn = function() {
@@ -62,10 +63,11 @@
         };
 
         var animateItems = function(inout, callback) {
-            var currentSlide = currentSlide();
+            var currentSlide = getCurrentSlide();
             currentSlide.show();
             var itemCount = $('.item', currentSlide).length;
             var itemFinishedAnimation = 0;
+            var callbackCalled = false;
             $('.item', currentSlide).each(function() {
                 var altx = $(this).data('alt-x');
                 var alty = $(this).data('alt-y');
@@ -88,19 +90,25 @@
                         if (x) $(toAnimate).animate({ left: x }, 300);
                         if (y) $(toAnimate).animate({ top: y }, 300);
                     } else {
-                        if (altx) $(toAnimate).animate({ left: altx }, 300);
-                        if (alty) $(toAnimate).animate({ top: alty }, 300, function() {
-                            animateItemsCallback(++itemFinishedAnimation, itemCount, callback);
+                        if (altx) $(toAnimate).animate({ left: altx }, 300, function() {
+                            if (!callbackCalled) {
+                                callback();
+                                callbackCalled = true;
+                            }
                         });
+                        if (alty) $(toAnimate).animate({ top: alty }, 300, function() {
+                            if (!callbackCalled) {
+                                callback();
+                                callbackCalled = true;
+                            }
+                        });
+                        if (!altx && !alty && !callbackCalled) {
+                            callback();
+                            callbackCalled = true;
+                        }
                     }
                 }, delay);
             });
-        };
-
-        var animateItemsCallback = function(a, b, callback) {
-            if (a >= b && callback) {
-                callback();
-            }
         };
 
         init(this);
