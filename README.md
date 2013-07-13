@@ -6,4 +6,4 @@ Create amazing slides and image gallery with SuperSlides
 Example
 =======
 
-See index.html for example
+See example.html for example
